@@ -1,75 +1,79 @@
-# Fusion Desktop for Windows
+# AI Factory Desktop for Windows
 
-A working Windows desktop wrapper for [Fusion](https://github.com/Runfusion/Fusion) (Runfusion/Fusion) that launches the web dashboard in a native Electron shell, with the Fusion engine running quietly in the background.
+A Windows desktop wrapper that launches **Fusion** and **Paperclip** together in native Electron windows. Built for people who want the "office" (Fusion) and the "agent team" (Paperclip) running side by side without separate terminal windows or browser tabs.
 
 ## Why this exists
 
-The official Fusion Desktop Windows installer (versions 0.49.0 and 0.50.0) has a critical bundling bug that prevents the app from starting on Windows:
+- **Fusion** (Runfusion/Fusion) is an AI-orchestrated development task board. Its official Windows desktop installer currently has a bundling bug that prevents it from launching on Windows (reported as [Runfusion/Fusion #1828](https://github.com/Runfusion/Fusion/issues/1828)).
+- **Paperclip** is an open-source platform for running AI agents, but its native desktop app is macOS-only. The Windows experience is CLI-based.
+- This wrapper solves both problems: it quietly starts the Fusion and Paperclip engines in the background and opens each dashboard in its own native window with a system tray.
 
-- `Dynamic require of "fs" is not supported`
-- `ERR_IMPORT_ATTRIBUTE_MISSING` for JSON imports
-- `Local runtime did not become ready in time`
+## What it does
 
-These errors come from the official Electron build's bundler misconfiguration (ESM output with CJS `require()` dependencies). The Fusion CLI's `fusion dashboard` command works fine on Windows, but the packaged desktop app does not.
-
-This wrapper was created to give Windows users a working desktop experience **today**, without waiting for an upstream fix. It sidesteps the broken installer by using the stable `fusion dashboard` CLI command and embedding it in a lightweight Electron window.
+1. **Checks for updates** on launch and asks before installing them.
+2. **Starts the Fusion engine** (`fn dashboard --no-auth`) on `http://localhost:4040`.
+3. **Starts the Paperclip engine** (`paperclipai run --data-dir ~/.paperclip-factory`) on `http://localhost:3100`.
+4. **Opens two Electron windows** — one for Fusion, one for Paperclip.
+5. **Minimizes to tray** instead of closing.
+6. **Detects already-running engines** and connects to them instead of failing.
 
 ## Who should use this
 
-Use this wrapper if:
+Windows users who want:
+- A single launcher for both Fusion and Paperclip
+- A native desktop feel (windows, tray, icons) instead of browser tabs
+- The engines to stay alive and reachable without keeping a terminal open
 
-- You want to run Fusion on Windows with a native desktop window (not a browser tab)
-- The official Fusion Desktop installer crashes or shows the errors listed above
-- You already have the Fusion CLI installed and working
-- You are comfortable running an unofficial community wrapper while waiting for an official fix
+## Prerequisites
 
-**Do not use this** if you expect official Runfusion support, code signing, or auto-updates. For the official experience, follow [Runfusion/Fusion issue #1828](https://github.com/Runfusion/Fusion/issues/1828) and use the official build once it is fixed.
+- Windows 10/11
+- [Node.js](https://nodejs.org/) (v20+)
+- Fusion CLI installed: `npm install -g @runfusion/fusion`
+- Paperclip CLI installed: `npm install -g paperclipai`
+- Both CLIs on your PATH
 
-## Features
+## Installation
 
-- ✅ Native Windows desktop window (not a browser tab)
-- ✅ Starts the Fusion engine silently in the background
-- ✅ Splash screen while the engine boots
-- ✅ Project directory picker on first launch
-- ✅ Remembers your project directory
-- ✅ System tray icon with show/hide/quit menu
-- ✅ Clean shutdown — kills the Fusion engine on quit
-- ✅ External links open in your default browser
+Download the latest portable executable from the [Releases](https://github.com/Automata-intelligentsia/fusion-desktop-windows/releases) page and run it. No install required.
 
-## Requirements
+Or build from source:
 
-- Windows 10 or 11
-- [Fusion CLI](https://github.com/Runfusion/Fusion) installed globally (`npm install -g @runfusion/fusion`)
-- A Git repository to use as your Fusion project directory
+```bash
+cd ai-factory-desktop
+npm install
+npm run build:portable
+```
 
-## Download
+The portable executable will be in `dist/AI-Factory-Desktop-2.0.0-portable.exe`.
 
-Grab the latest portable executable or installer from the [Releases](https://github.com/Automata-intelligentsia/fusion-desktop-windows/releases) page.
+## First run
 
-## Usage
+On first launch, the app will ask you to pick a Fusion project directory. This should be a Git repository. The choice is saved to `~/.ai-factory-desktop/config.json` and reused on future launches. You can change it later from the tray menu.
 
-1. Run `Fusion-Desktop-Wrapper-<version>-portable.exe`
-2. Select your Fusion project directory (a Git repo)
-3. Wait for the splash screen
-4. Fusion dashboard opens in a native window
+## Configuration
 
-To change the project directory later, right-click the system tray icon and select **Change Project Directory**.
+- `~/.ai-factory-desktop/config.json` — stores the selected Fusion project root
+- `~/.ai-factory-desktop/wrapper.log` — runtime logs from both engines
+- `~/.paperclip-factory/` — isolated Paperclip data directory used by the wrapper
 
-## Building from source
+## Update behavior
+
+When the app starts, it checks the npm registry for newer versions of `@runfusion/fusion` and `paperclipai`. If a newer version is available, it shows a dialog asking whether to update. Updates are never automatic.
+
+## Development
 
 ```bash
 npm install
-npm run build        # Build installer + portable
-npm run build:portable  # Build portable only
+npm run dev
 ```
 
-## How it works
+## Differences from the original Fusion-only wrapper
 
-The wrapper spawns `fusion dashboard --no-auth` with a hidden console window, waits for `http://127.0.0.1:4040` to become reachable, then loads that URL in an Electron `BrowserWindow`.
+This repo evolved from a standalone Fusion desktop wrapper. The current version is a combined "AI Factory" launcher that also includes Paperclip support.
 
 ## Disclaimer
 
-This is an unofficial community wrapper. It is not affiliated with or endorsed by Runfusion. All Fusion functionality, trademarks, and intellectual property belong to Runfusion.
+This is an unofficial community wrapper. It is not affiliated with Runfusion or Paperclip. Use at your own risk. No personal data, API keys, or project files are included in the repository.
 
 ## License
 

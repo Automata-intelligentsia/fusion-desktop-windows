@@ -1,7 +1,7 @@
 {
-  "name": "fusion-desktop-wrapper",
-  "version": "1.0.0",
-  "description": "Desktop wrapper for Fusion web dashboard",
+  "name": "ai-factory-desktop",
+  "version": "2.0.0",
+  "description": "A Windows desktop wrapper for Fusion and Paperclip — launches both engines with update checks",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -11,8 +11,10 @@
   },
   "keywords": [
     "fusion",
+    "paperclip",
     "desktop",
-    "wrapper"
+    "wrapper",
+    "ai-factory"
   ],
   "author": "Drew Donaldson",
   "license": "MIT",
@@ -21,8 +23,8 @@
     "electron-builder": "^25.1.7"
   },
   "build": {
-    "appId": "com.automataintel.fusion-desktop-wrapper",
-    "productName": "Fusion Desktop",
+    "appId": "com.automataintel.ai-factory-desktop",
+    "productName": "AI Factory Desktop",
     "directories": {
       "output": "dist"
     },
@@ -30,6 +32,7 @@
       "main.js",
       "package.json",
       "icon.ico",
+      "icon.png",
       "tray-icon.png"
     ],
     "win": {
@@ -50,10 +53,10 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Fusion Desktop"
+      "shortcutName": "AI Factory Desktop"
     },
     "portable": {
-      "artifactName": "Fusion-Desktop-Wrapper-${version}-portable.exe"
+      "artifactName": "AI-Factory-Desktop-${version}-portable.exe"
     }
   }
 }
